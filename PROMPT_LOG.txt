@@ -1,0 +1,13 @@
+For this assignment, the AI model I chose to use was Gemini.
+
+I think I'm going to stick with the cruises table, those columns and data types look perfect! Can you help me write a CREATE TABLE statement?
+
+Should I specify not null for any of the columns?
+
+Could you show me how to write a Python function that asks the user for cruise_line, ship_name, departure_date, duration_nights, loyalty_status (optional), and total_fare and inserts a new row into my cruises table using sqlite3. Use parameterized queries to avoid SQL injection.
+
+Love it! That worked perfectly! Yes, I now want to work on SELECT. I definitely want there to be an option to show all cruises. I think it would also be cool to have a search cruises, and user can choose to search for cruises based on cruise_line (query using WHERE clause). Sort cruises could also be cool, would there be a way to easily sort cruises based on date, or will this be tricky because it is type TEXT?
+
+Any interesting/helpful functionality you can think of that I can add in addition?
+
+I love that!!! I now want to implement UPDATE and DELETE. For UPDATE, I want the user to be able to pick a record (by selecting from a list) and change one or more of its fields, potentially if they made a mistake. For DELETE, I want the user to be able to remove a record by selecting from a list, and I want the app to ask for confirmation before deleting ("Are you sure?")
