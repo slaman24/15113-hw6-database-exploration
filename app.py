@@ -138,6 +138,117 @@ def show_statistics():
         
     conn.close()
 
+def update_cruise():
+    print("\n--- Update a Cruise ---")
+    conn = sqlite3.connect('cruise_tracker.db')
+    cursor = conn.cursor()
+    
+    # First, list all cruises so the user knows which ID to pick
+    cursor.execute('SELECT cruise_id, cruise_line, ship_name, departure_date FROM cruises')
+    cruises = cursor.fetchall()
+    
+    if not cruises:
+        print("No cruises available to update!")
+        conn.close()
+        return
+        
+    for c in cruises:
+        # c[0] is the cruise_id
+        print(f"ID {c[0]} | {c[1]} {c[2]} ({c[3]})")
+        
+    try:
+        target_id = int(input("\nEnter the ID of the cruise you want to update: "))
+    except ValueError:
+        print("Invalid ID format. Returning to menu.")
+        conn.close()
+        return
+
+    # Fetch the specific record they chose
+    cursor.execute('SELECT * FROM cruises WHERE cruise_id = ?', (target_id,))
+    record = cursor.fetchone()
+    
+    if not record:
+        print(f"No cruise found with ID {target_id}.")
+        conn.close()
+        return
+
+    print("\nPress Enter to keep the current value, or type a new one.")
+    
+    # record indices: 0:id, 1:line, 2:ship, 3:date, 4:nights, 5:loyalty, 6:fare
+    new_line = input(f"Cruise Line [{record[1]}]: ") or record[1]
+    new_ship = input(f"Ship Name [{record[2]}]: ") or record[2]
+    new_date = input(f"Departure Date [{record[3]}]: ") or record[3]
+    
+    new_nights_input = input(f"Duration in Nights [{record[4]}]: ")
+    new_nights = int(new_nights_input) if new_nights_input else record[4]
+    
+    new_loyalty_input = input(f"Loyalty Status [{record[5] if record[5] else 'None'}]: ")
+    # Handle the optional loyalty status
+    if new_loyalty_input == "":
+        new_loyalty = record[5] # keep existing
+    elif new_loyalty_input.lower() == "none":
+        new_loyalty = None # allow them to clear it out
+    else:
+        new_loyalty = new_loyalty_input
+        
+    new_fare_input = input(f"Total Fare [{record[6]}]: ")
+    new_fare = float(new_fare_input) if new_fare_input else record[6]
+
+    # Execute the UPDATE statement
+    cursor.execute('''
+        UPDATE cruises 
+        SET cruise_line = ?, ship_name = ?, departure_date = ?, duration_nights = ?, loyalty_status = ?, total_fare = ?
+        WHERE cruise_id = ?
+    ''', (new_line, new_ship, new_date, new_nights, new_loyalty, new_fare, target_id))
+    
+    conn.commit()
+    print("\nSuccess! Cruise updated.")
+    conn.close()
+
+def delete_cruise():
+    print("\n--- Delete a Cruise ---")
+    conn = sqlite3.connect('cruise_tracker.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT cruise_id, cruise_line, ship_name, departure_date FROM cruises')
+    cruises = cursor.fetchall()
+    
+    if not cruises:
+        print("No cruises available to delete!")
+        conn.close()
+        return
+        
+    for c in cruises:
+        print(f"ID {c[0]} | {c[1]} {c[2]} ({c[3]})")
+        
+    try:
+        target_id = int(input("\nEnter the ID of the cruise you want to delete: "))
+    except ValueError:
+        print("Invalid ID format. Returning to menu.")
+        conn.close()
+        return
+
+    # Fetch it first so we can name the ship in the confirmation prompt
+    cursor.execute('SELECT cruise_line, ship_name FROM cruises WHERE cruise_id = ?', (target_id,))
+    record = cursor.fetchone()
+    
+    if not record:
+        print(f"No cruise found with ID {target_id}.")
+        conn.close()
+        return
+
+    # The confirmation safeguard
+    confirm = input(f"\nAre you SURE you want to delete your trip on the {record[0]} {record[1]}? (y/n): ")
+    
+    if confirm.lower() == 'y':
+        cursor.execute('DELETE FROM cruises WHERE cruise_id = ?', (target_id,))
+        conn.commit()
+        print("\nRecord permanently deleted.")
+    else:
+        print("\nPhew! Deletion cancelled. Your record is safe.")
+        
+    conn.close()
+
 # --- 3. The Main Menu Loop ---
 def main():
     # Make sure the table exists before we do anything else
@@ -152,9 +263,11 @@ def main():
         print("3. Search by Cruise Line")
         print("4. Sort by Departure Date")
         print("5. Show Statistics")
-        print("6. Quit")
+        print("6. Update a Cruise")
+        print("7. Delete a Cruise")
+        print("8. Quit")
         
-        choice = input("\nEnter your choice (1-6): ")
+        choice = input("\nEnter your choice (1-8): ")
         
         if choice == '1':
             add_new_cruise()
@@ -167,10 +280,14 @@ def main():
         elif choice == '5':
             show_statistics()
         elif choice == '6':
+            update_cruise()
+        elif choice == '7':
+            delete_cruise()
+        elif choice == '8':
             print("\nClosing Cruise Tracker. Bon voyage!\n")
             break # This exits the while loop and ends the program
         else:
-            print("\nInvalid choice. Please enter a number between 1 and 6.")
+            print("\nInvalid choice. Please enter a number between 1 and 8.")
 
 # This tells Python to run the main() function when you start the file
 if __name__ == "__main__":
