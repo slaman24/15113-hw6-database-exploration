@@ -2,7 +2,7 @@
 
 Video demo: https://drive.google.com/file/d/1hH7D-VRyFd-fLSzqF7pmODmDrpkcs3bY/view?usp=sharing
 
-For my hw6 assignment, I decided to build a cruise tracker. My family loves to cruise, and it is one of our favorite vacations! I thought this tool could actually be a very useful and practical tool for us to use to organize our cruise vacations. I created a single table called cruises with 7 columns: cruise_id (integer, primary key), cruise_line (text, required), ship_name (text, required), departure_date (text, required), duration_nights (integer, required), loyalty_status (text, optional), total_fare (real, required). My app can be run with the command python app.py. Here is a brief description of how each CRUD operation is implemented and a how a user performs it:
+For my hw6 assignment, I decided to build a cruise tracker. My family loves to cruise, and it is one of our favorite vacations! I thought this could be a very practical tool for my family to use to organize our cruise vacations. I created a single table called cruises with 7 columns: cruise_id (integer, primary key), cruise_line (text, required), ship_name (text, required), departure_date (text, required), duration_nights (integer, required), loyalty_status (text, optional), total_fare (real, required). My app can be run with the command python app.py. Here is a brief description of how each CRUD operation is implemented and performed by a user:
 
 Create (INSERT):
 
